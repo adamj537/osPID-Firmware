@@ -1,8 +1,7 @@
 # osPID Controller
 Author:  Adam Johnson (adamj537@gmail.com)
-Last Updated:  8/7/2015
 
-1.	LICENSING & ORIGINS
+##1.	LICENSING & ORIGINS
 
 This firmware was developed from the osPID (http://www.ospid.com/blog/), version 1.6, released by Brett Beauregard and RocketScream (www.rocketscream.com) under the GPLv3 & BSD License, incorporating the following other open source modules.  All files have been reformatted and re-commented for uniformity and clarity.
 
@@ -14,23 +13,23 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-2.	HARDWARE
+##2.	HARDWARE
 
 The firmware requires Arduino-compatible hardware.  The firmware is configured for digital output card v1.5 & temperature input card v1.2.  If you are using a different I/O configuration, be sure to uncomment the appropriate #define statements in io.h.
 
-3.	REVISIONS
+##3.	REVISIONS
 
-Updates for version 2.0
+###Updates for version 2.0
 -	reformatted all files with a uniform style
 -	greatly edited comments to provide greater clarity
 -	expanded README to include source of all firmware modules
 -	TODO:  fix glitch causing EEPROM settings to be wiped out
 -	TODO:  expand menu system to allow setup without "front-end" software
 
-Updates for version 1.6
+###Updates for version 1.6
 -	added support for v1.5 of the Temperature Input card (MAX31855 Thermocouple chip)
  
-Updates for version 1.5
+###Updates for version 1.5
 -	restructured code to allow for different IO cards
 -	added reflow profile support
 -	eliminated LCD flicker
