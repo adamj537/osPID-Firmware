@@ -1,4 +1,4 @@
-#README for osPID Controller
+# osPID Controller
 Author:  Adam Johnson (adamj537@gmail.com)
 Last Updated:  8/7/2015
 
@@ -6,7 +6,7 @@ Last Updated:  8/7/2015
 
 This firmware was developed from the osPID (http://www.ospid.com/blog/), version 1.6, released by Brett Beauregard and RocketScream (www.rocketscream.com) under the GPLv3 & BSD License, incorporating the following other open source modules.  All files have been reformatted and re-commented for uniformity and clarity.
 
-The MAX31855 library is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.  The MAX6675 library is from www.ladyada.net and is in the public domain.  The EEPROMAnything module originated at playground.arduino.cc.  The Arduino AutoTune library is by Brett Beauregard, and originally ported from the AutotunerPID Toolkit by William Spinelli (http://www.mathworks.com/matlabcentral/fileexchange/4652-autotunerpid-toolkit) © 2004.  Brett's AutoTune library is licensed under the FreeBSD License:
+The MAX31855 library is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.  The MAX6675 library is from www.ladyada.net and is in the public domain.  The EEPROMAnything module originated at playground.arduino.cc.  The Arduino AutoTune library is by Brett Beauregard, and originally ported from the AutotunerPID Toolkit by William Spinelli (http://www.mathworks.com/matlabcentral/fileexchange/4652-autotunerpid-toolkit) Â© 2004.  Brett's AutoTune library is licensed under the FreeBSD License:
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 -	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
