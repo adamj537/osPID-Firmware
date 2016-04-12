@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *	Filename:		AnalogButton.cpp
+ *	Filename:		AnalogButton.h
  *
  *	Author:			Adam Johnson
  *

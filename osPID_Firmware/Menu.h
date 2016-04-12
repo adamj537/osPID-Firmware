@@ -20,7 +20,7 @@
 //Menu states
 enum {
   // Dashboard Menu
-  ST_DASHBRD=1,	//need to make sure no state is 0
+  ST_DASHBRD = 1,	//need to make sure no state is 0
   ST_SP, ST_PV, ST_OUT, ST_MAN,
   
   // Input Menu

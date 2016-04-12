@@ -25,9 +25,11 @@
 #include <EEPROM.h>
 #include "InputCard.h"
 
-//UNCOMMENT THE APPROPRIATE DEFINE STATEMENT FOR THE CARD BEING USED
-//#define TEMP_INPUT_V110
-#define TEMP_INPUT_V120
+#ifdef TEMP_INPUT_V110
+const char inputCardVersion[5] = "IID1";
+#else ifdefined TEMP_INPUT_V120
+const char inputCardVersion[5] = "IID2";
+#endif
 
 const uint8_t thermistorPin = A6;
 const uint8_t thermocoupleCS = 10;
@@ -66,11 +68,11 @@ MAX6675 thermocouple(thermocoupleCLK, thermocoupleMISO, thermocoupleCS);
 
 InputCard::InputCard(void)
 {
-	inputType = 0;						//default input type is thermocouple
-	thermRes = 10000;					//default thermistor is 10 kOhm @ 25 C
+	inputType = 0;						// default input type is thermocouple
+	thermRes = 10000;					// default thermistor is 10 kOhm @ 25 C
 	thermRefTemp = 25;
-	thermBeta = 3575;					//default thermistor beta is 3575
-	refRes = 10000;						//default thermistor has ref resistor 10 Ohm
+	thermBeta = 3575;					// default thermistor beta is 3575
+	refRes = 10000;						// default thermistor has ref resistor 10 Ohm
 }
 
 #if (defined(TEMP_INPUT_V110) || defined(TEMP_INPUT_V120))
@@ -81,41 +83,45 @@ InputCard::InputCard(void)
  *
  *	Description:	Sets whether we use a thermocouple or thermistor.
  *
- *	Parameters:		uint8_t sensorType - 0 = thermocouple; 1 = thermistor
+ *	Parameters:		sensorType - selected type of sensor
  *
- *	Return Value:	non-zero values indicate errors
+ *	Return Value:	enumerated error code
  *
  *****************************************************************************/
 
-int16_t InputCard::SetSensorType(uint8_t sensorType)
+inputResult_t InputCard::SetSensorType(inputSensor_t sensorType)
 {
-	int16_t error = 0;						// an optimistic return value :)
-  
-	if (sensorType > 1)						// Check for invalid sensor types.
+	// Start as a pessimist :(
+	inputResult_t result = INPUT_RESULT_INVALID;
+	
+	// If the sensor is valid...
+	if ((sensorType == INPUT_SENSOR_THERMOCOUPLE) ||
+		(sensorType == INPUT_SENSOR_THERMISTOR))
 	{
-		error = sensorType;					// Set an error.
+		// Remember the input type.
+		inputType = sensorType;
+		
+		// If we got here, we're ok :)
+		result = INPUT_RESULT_OK;
 	}
-	else
-	{
-		inputType = sensorType;				// Remember the input type.
-	}
-  
-	return error;							// Return the status.
+	
+	// Return the status.
+	return result;
 }
 
 /******************************************************************************
 *
-* Function:	GetSensorType
+*	Function:		GetSensorType
 *
-* Description:	Indicates whether we're use a thermocouple or thermistor.
+*	Description:	Indicates whether we're use a thermocouple or thermistor.
 *
-* Return Value:	0 = thermocouple; 1 = thermistor; other values indicate errors
+*	Return Value:	enumerated sensor type
 *
 ******************************************************************************/
 
-int InputCard::GetSensorType()
+inputSensor_t InputCard::GetSensorType()
 {
-  return inputType;
+	return inputType;
 }
 
 /******************************************************************************
@@ -128,85 +134,63 @@ int InputCard::GetSensorType()
 
 void InputCard::SetThermistorCoeffs(double res, double temp, double beta, double divider)
 {
-  thermRes = res;		//thermistor's resistance at reference temperature
-  thermRefTemp = temp;		//thermistor's reference temperature
-  thermBeta = beta;		//thermistor's beta coefficient
-  refRes = divider;		//value of resistor used for thermistor's voltage divider
+	  thermRes = res;		//thermistor's resistance at reference temperature
+	  thermRefTemp = temp;		//thermistor's reference temperature
+	  thermBeta = beta;		//thermistor's beta coefficient
+	  refRes = divider;		//value of resistor used for thermistor's voltage divider
 }
 
 double InputCard::GetThermistorRefRes()
 {
-  return thermRes;
+	return thermRes;
 }
 
 double InputCard::GetThermistorRefTemp()
 {
-  return thermRefTemp;
+	return thermRefTemp;
 }
 
 double InputCard::GetThermistorBeta()
 {
-  return thermBeta;
+	return thermBeta;
 }
 
 double InputCard::GetThermistorDiv()
 {
-  return refRes;
-}
-
-void InputCard::SerialSend()
-{
-  Serial.print((int)inputType); 
-  Serial.print(" "); 
-  Serial.print(thermRes); 
-  Serial.print(" ");  
-  Serial.print(thermBeta); 
-  Serial.print(" ");  
-  Serial.print(thermRefTemp);   
-  Serial.print(" ");  
-  Serial.println(refRes);
-}
-
-void InputCard::SerialID()
-{
-#ifdef TEMP_INPUT_V110
-  Serial.print(" IID1");
-#else ifdefined TEMP_INPUT_V120
-  Serial.print(" IID2");
-#endif
+	return refRes;
 }
 
 double InputCard::ReadThermistorTemp(int voltage)
 {
-  float R;
-  float steinhart;
-  
-  R = refRes / (1024.0/(float)voltage - 1);	// convert ADC value to voltage
-  steinhart = R / thermRes;			// (R/Ro)
-  steinhart = log(steinhart);			// ln(R/Ro)
-  steinhart /= thermBeta;			// 1/B * ln(R/Ro)
-  steinhart += 1.0 / (thermRefTemp + 273.15);	// + (1/To)
-  steinhart = 1.0 / steinhart;			// Invert
-  steinhart -= 273.15;				// convert to C
+	  float R;
+	  float steinhart;
+	  
+	  R = refRes / (1024.0/(float)voltage - 1);	// convert ADC value to voltage
+	  steinhart = R / thermRes;			// (R/Ro)
+	  steinhart = log(steinhart);			// ln(R/Ro)
+	  steinhart /= thermBeta;			// 1/B * ln(R/Ro)
+	  steinhart += 1.0 / (thermRefTemp + 273.15);	// + (1/To)
+	  steinhart = 1.0 / steinhart;			// Invert
+	  steinhart -= 273.15;				// convert to C
 
-  return steinhart;
+	  return steinhart;
 }
 
 double InputCard::ReadFromCard()
 {
-  if(inputType == 0)
-  {
-    double val = thermocouple.ReadThermocouple(CELSIUS);
-    if (val == FAULT_OPEN || val == FAULT_SHORT_GND || val == FAULT_SHORT_VCC)
-    {
-      val = NAN;
-    }
-    return val;
-  }
-  else if(inputType == 1)
-  {
-    return ReadThermistorTemp(analogRead(thermistorPin));
-  }
+	if(inputType == 0)
+	{
+		double val = thermocouple.ReadThermocouple(CELSIUS);
+		if (val == FAULT_OPEN || val == FAULT_SHORT_GND || val == FAULT_SHORT_VCC)
+	{
+		val = NAN;
+	}
+		return val;
+	}
+	else if(inputType == 1)
+	{
+		return ReadThermistorTemp(analogRead(thermistorPin));
+	}
 }
 
 #endif /*TEMP_INPUT_V110 || TEMP_INPUT_V120*/

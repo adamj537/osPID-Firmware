@@ -25,9 +25,9 @@
 #include "EEPROMAnything.h"
 #include "Menu.h"
 
-uint8 state = 0;						//state machine variable
-uint8 nextState = 0;					//state machine variable
-uint8 (* StateFunction) (uint8) = 0x00;	//function performed at each state
+uint8_t state = 0;						//state machine variable
+uint8_t nextState = 0;					//state machine variable
+uint8_t (* StateFunction) (uint8) = 0x00;	//function performed at each state
 
 // ***** PIN ASSIGNMENTS *****
 const byte buzzerPin = 3;
@@ -97,9 +97,9 @@ boolean runningProfile = false;
 
 void setup(void)
 {
-	Serial.begin(9600);					//Initialize serial communication module
-	lcdTime=10;							//Initialize LCD
-	buttonTime=1;						//Set up analog buttons
+	Serial.begin(9600);					// Initialize UART.
+	lcdTime=10;							// Initialize LCD.
+	buttonTime=1;						// Set up analog buttons.
 	ioTime=5;
 	serialTime=6;
 	//windowStartTime=2;

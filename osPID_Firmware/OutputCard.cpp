@@ -26,6 +26,8 @@
 const uint8_t relay1 = 6;				// relay on Digital Pin 6
 const uint8_t relay2 = 5;				// relay on Digital Pin 5
 
+const char outputVersion[5] = "OID1";
+
 #if defined(DIGITAL_OUTPUT_V120) || defined(DIGITAL_OUTPUT_V150)
 
 void OutputCard::SetOutputWindow(double val)
@@ -70,11 +72,6 @@ OutputCard::OutputCard(void)
 	pinMode(relay2, OUTPUT);
 }
 
-void OutputCard::InitializeCard(void)
-{
-	// There's nothing that needs to be done here :)
-}
-
 /******************************************************************************
  *
  *	Function:		SelectRelay
@@ -108,59 +105,46 @@ int OutputCard::SelectRelay(byte relay)
 
 int OutputCard::GetSelectedRelay()
 {
-  return outputRelay;
-}
-
-void OutputCard::SerialID()
-{
-  Serial.print(" OID1");
-}
-
-// Serial send & receive
-void OutputCard::SerialSend()
-{
-  Serial.print((int)outputRelay); 
-  Serial.print(" ");  
-  Serial.println(outWindowSec); 
+	return outputRelay;
 }
 
 void OutputCard::SetRelay(bool relay, bool state)
 {
-  if(relay == 0)		//activate selected relay
-  {
-    digitalWrite(relay1, state);
-  }
-  else if(relay == 1)
-  {
-    digitalWrite(relay2, state);
-  }
+	if(relay == 0)		//activate selected relay
+	{
+		digitalWrite(relay1, state);
+	}
+	else if(relay == 1)
+	{
+		digitalWrite(relay2, state);
+	}
 }
 
 void OutputCard::WriteToCard(double value)
 {
-  unsigned long wind;	//window of time
-  unsigned long oVal;	//output value (0 - 100%)
+	unsigned long wind;	// window of time
+	unsigned long oVal;	// output value (0 - 100%)
 
-  wind  = millis() % windowSize;
-  /*
-  (millis() - windowStartTime);
-  if(wind > windowSize)
-  { 
-    wind -= windowSize;
-    windowStartTime += windowSize;
-  }
-  */
-  
-  oVal = (unsigned long)(value*(double)windowSize / 100.0);
-  
-  if(outputRelay == 0)		//activate selected relay
-  {
-    digitalWrite(relay1 ,(oVal > wind) ? HIGH : LOW);
-  }
-  else if(outputRelay == 1)
-  {
-    digitalWrite(relay2 ,(oVal > wind) ? HIGH : LOW);
-  }
+	wind  = millis() % windowSize;
+	/*
+	wind = (millis() - windowStartTime);
+	if(wind > windowSize)
+	{ 
+		wind -= windowSize;
+		windowStartTime += windowSize;
+	}
+	*/
+
+	oVal = (unsigned long)(value*(double)windowSize / 100.0);
+
+	if (outputRelay == 0)		//activate selected relay
+	{
+		digitalWrite(relay1 ,(oVal > wind) ? HIGH : LOW);
+	}
+	else if (outputRelay == 1)
+	{
+		digitalWrite(relay2 ,(oVal > wind) ? HIGH : LOW);
+	}
 }
 
 #endif /* DIGITAL_OUTPUT_V120 & DIGITAL_OUTPUT_V150 */
