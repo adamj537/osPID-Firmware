@@ -23,12 +23,91 @@
 #include <stdint.h>
 #include "OutputCard.h"
 
-const uint8_t relay1 = 6;				// relay on Digital Pin 6
-const uint8_t relay2 = 5;				// relay on Digital Pin 5
+const uint8_t pinRelay1 = 6;				// relay on Digital Pin 6
+const uint8_t pinRelay2 = 5;				// relay on Digital Pin 5
 
 const char outputVersion[5] = "OID1";
 
+byte outputRelay = 1;
+
 #if defined(DIGITAL_OUTPUT_V120) || defined(DIGITAL_OUTPUT_V150)
+
+/******************************************************************************
+ *
+ *	Function:		OutputCard (Class Initializer)
+ *
+ *	Description:	Sets up the output card with default values.
+ *
+ *****************************************************************************/
+OutputCard::OutputCard(void)
+{
+	outputRelay = 0;					// Default to use relay 1.
+	outWindowSec = 5.0;					// Set window size for 5 seconds.
+	windowSize = 5000;					// Set window size for 5 seconds.
+  
+	pinMode(relay1, OUTPUT);			// Set relay pins as outputs.
+	pinMode(relay2, OUTPUT);
+}
+
+/******************************************************************************
+ *
+ *	Function:		SetRelayState
+ *
+ *	Description:	Turn a relay on or off.
+ *
+ *	Parameters:		relay - which relay to change
+ *					state - desired state of relay (true = on; false = off)
+ *
+ *****************************************************************************/
+outputResult_t OutputCard::SetRelayState(bool relay, bool state)
+{
+	outputResult_t result = OUTPUT_RESULT_OK;
+	
+	if (relay == 0)
+	{
+		digitalWrite(relay1, state);
+	}
+	else if(relay == 1)
+	{
+		digitalWrite(relay2, state);
+	}
+	else
+	{
+		result = OUTPUT_RESULT_INVALID;
+	}
+
+	return result;
+}
+
+/******************************************************************************
+ *
+ *	Function:		SetRelayState
+ *
+ *	Description:	Turn a relay on or off.
+ *
+ *	Parameters:		relay - which relay to change
+ *					state - desired state of relay (true = on; false = off)
+ *
+ *****************************************************************************/
+outputResult_t  GetRelayState(bool relay, bool *state)
+{
+	outputResult_t result = OUTPUT_RESULT_OK;
+	
+	if (relay == 0)
+	{
+		*state = digitalRead(relay1, state);
+	}
+	else if (relay == 1)
+	{
+		*state = digitalRead(relay2, state);
+	}
+	else
+	{
+		result = OUTPUT_RESULT_INVALID;
+	}
+
+	return result;
+}
 
 void OutputCard::SetOutputWindow(double val)
 {
@@ -54,73 +133,7 @@ unsigned long OutputCard::GetOutputWindow()
 	return windowSize;
 }
 
-/******************************************************************************
- *
- *	Function:		OutputCard (Class Initializer)
- *
- *	Description:	Sets up the output card with default values.
- *
- *****************************************************************************/
-
-OutputCard::OutputCard(void)
-{
-	outputRelay = 0;					// Default to use relay 1.
-	outWindowSec = 5.0;					// Set window size for 5 seconds.
-	windowSize = 5000;					// Set window size for 5 seconds.
-  
-	pinMode(relay1, OUTPUT);			// Set relay pins as outputs.
-	pinMode(relay2, OUTPUT);
-}
-
-/******************************************************************************
- *
- *	Function:		SelectRelay
- *
- *	Description:	There are two relays on the output card.  Relay 1 is either
- *					a solid-state relay or a mechanical relay (selectable by a
- *					jumper).  Relay 2 is a mechanical relay.  This function
- *					selects which one we use.
- *
- *	Parameters:		byte relay - 0 = relay 1; 1 = relay 2
- *
- * Return Value:	non-zero values indicate errors
- *
- *****************************************************************************/
-
-int OutputCard::SelectRelay(byte relay)
-{
-	int error;
-  
-	if (relay < 2)
-	{
-		outputRelay = relay;
-	}
-	else
-	{
-		error = relay;
-	}
-  
-	return error;
-}
-
-int OutputCard::GetSelectedRelay()
-{
-	return outputRelay;
-}
-
-void OutputCard::SetRelay(bool relay, bool state)
-{
-	if(relay == 0)		//activate selected relay
-	{
-		digitalWrite(relay1, state);
-	}
-	else if(relay == 1)
-	{
-		digitalWrite(relay2, state);
-	}
-}
-
-void OutputCard::WriteToCard(double value)
+void OutputCard::SetOutput(double value)
 {
 	unsigned long wind;	// window of time
 	unsigned long oVal;	// output value (0 - 100%)

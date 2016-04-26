@@ -22,7 +22,6 @@
 
 #include <Arduino.h>
 #include <stdint.h>
-#include <EEPROM.h>
 #include "InputCard.h"
 
 #ifdef TEMP_INPUT_V110
@@ -31,10 +30,10 @@ const char inputCardVersion[5] = "IID1";
 const char inputCardVersion[5] = "IID2";
 #endif
 
-const uint8_t thermistorPin = A6;
-const uint8_t thermocoupleCS = 10;
-const uint8_t thermocoupleMISO = 12;
-const uint8_t thermocoupleCLK = 13;
+uint8_t thermistorPin = A6;
+uint8_t thermocoupleCS = 10;
+uint8_t thermocoupleMISO = 12;
+uint8_t thermocoupleCLK = 13;
 
 #ifdef TEMP_INPUT_V120
 #include "MAX31855_local.h"
@@ -64,11 +63,23 @@ MAX6675 thermocouple(thermocoupleCLK, thermocoupleMISO, thermocoupleCS);
  *					Dwyer type "B" curve, and 391-9702, which may be a Dwyer
  *					type "A" curve.
  *
+ *	Parameters:		pinThermistor - analog pin for thermistor
+ *					pinCS - SPI chip select pin for thermocouple chip
+ *					pinMISO - SPI data pin for thermocouple chip
+ *					pinCLK - SPI clock pin for thermocouple chip
+ *
  *****************************************************************************/
 
-InputCard::InputCard(void)
+InputCard::InputCard(byte pinThermistor, byte pinCS, byte pinMISO, byte pinCLK)
 {
-	inputType = 0;						// default input type is thermocouple
+	// Remember the pins we're using.
+	thermistorPin = pinThermistor;
+	thermocoupleCS = pinCS;
+	thermocoupleMISO = pinMISO;
+	thermocoupleCLK = pinCLK;
+	
+	// Set default coefficients.
+	inputType = INPUT_SENSOR_THERMISTOR;// default input type is thermocouple
 	thermRes = 10000;					// default thermistor is 10 kOhm @ 25 C
 	thermRefTemp = 25;
 	thermBeta = 3575;					// default thermistor beta is 3575
@@ -135,7 +146,7 @@ inputSensor_t InputCard::GetSensorType()
 void InputCard::SetThermistorCoeffs(double res, double temp, double beta, double divider)
 {
 	  thermRes = res;		//thermistor's resistance at reference temperature
-	  thermRefTemp = temp;		//thermistor's reference temperature
+	  thermRefTemp = temp;	//thermistor's reference temperature
 	  thermBeta = beta;		//thermistor's beta coefficient
 	  refRes = divider;		//value of resistor used for thermistor's voltage divider
 }
@@ -160,37 +171,51 @@ double InputCard::GetThermistorDiv()
 	return refRes;
 }
 
-double InputCard::ReadThermistorTemp(int voltage)
+double InputCard::CalcSteinhart(float R)
 {
-	  float R;
-	  float steinhart;
-	  
-	  R = refRes / (1024.0/(float)voltage - 1);	// convert ADC value to voltage
-	  steinhart = R / thermRes;			// (R/Ro)
-	  steinhart = log(steinhart);			// ln(R/Ro)
-	  steinhart /= thermBeta;			// 1/B * ln(R/Ro)
-	  steinhart += 1.0 / (thermRefTemp + 273.15);	// + (1/To)
-	  steinhart = 1.0 / steinhart;			// Invert
-	  steinhart -= 273.15;				// convert to C
+	float steinhart;	// eventually this will be temperature [C]
 
-	  return steinhart;
+	steinhart = R / thermRes;					// (R/Ro)
+	steinhart = log(steinhart);					// ln(R/Ro)
+	steinhart /= thermBeta;						// 1/B * ln(R/Ro)
+	steinhart += 1.0 / (thermRefTemp + 273.15);	// + (1/To)
+	steinhart = 1.0 / steinhart;				// Invert
+	steinhart -= 273.15;						// convert to C
+
+	return steinhart;
 }
 
 double InputCard::ReadFromCard()
 {
-	if(inputType == 0)
+	double temp = NAN;	// sensor temperature
+	
+	// If we're using a thermocouple...
+	if(inputType == INPUT_SENSOR_THERMOCOUPLE)
 	{
-		double val = thermocouple.ReadThermocouple(CELSIUS);
-		if (val == FAULT_OPEN || val == FAULT_SHORT_GND || val == FAULT_SHORT_VCC)
+		// Read temperature from the thermocouple chip...
+		temp = thermocouple.ReadThermocouple(CELSIUS);
+
+		// If there was an error...
+		if (temp == FAULT_OPEN || temp == FAULT_SHORT_GND || temp == FAULT_SHORT_VCC)
+		{
+			// Set an error value.
+			temp = NAN;
+		}
+	}
+	// If we're using a thermistor...
+	else if(inputType == INPUT_SENSOR_THERMISTOR)
 	{
-		val = NAN;
+		// Read the analog pin.
+		int counts = analogRead(thermistorPin);
+
+		// Convert to resistance.
+		int R = refRes / (1024.0/(float)counts - 1);
+
+		// Convert to temperature.
+		temp = CalcSteinhart(R);
 	}
-		return val;
-	}
-	else if(inputType == 1)
-	{
-		return ReadThermistorTemp(analogRead(thermistorPin));
-	}
+
+	return temp;
 }
 
 #endif /*TEMP_INPUT_V110 || TEMP_INPUT_V120*/

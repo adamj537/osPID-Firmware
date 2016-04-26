@@ -26,7 +26,7 @@ class InputCard
 {
 public:
 	// Initialize the class.
-	InputCard();
+	InputCard(byte pinThermistor, byte pinCS, byte pinMISO, byte pinCLK);
 	
 	// Set whether we use a thermocouple or thermistor.
 	inputResult_t SetSensorType(inputSensor_t inputType);
@@ -59,8 +59,8 @@ private:
 	double thermBeta;					// thermistor's beta coefficient
 	double refRes;						// value of resistor used for thermistor's voltage divider
 
-	// Calculate the thermistor's temperature from a voltage.
-	double ReadThermistorTemp(int voltage);
+	// Calculate the thermistor's temperature from a resistance.
+	double CalcSteinhart(float R);
 };
 
 #endif
