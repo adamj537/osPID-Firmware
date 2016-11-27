@@ -28,7 +28,7 @@ private:
   int8_t sclk;					//SPI clock pin
   int8_t miso;					//SPI data pin
   int8_t cs;					//SPI chip select pin
-  uint8_t SpiRead(void);			//reads data over SPI
+  uint8_t SpiRead(void);		//reads data over SPI
 };
 
 #endif
