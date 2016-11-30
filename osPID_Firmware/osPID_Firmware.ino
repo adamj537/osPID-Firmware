@@ -1,8 +1,8 @@
 /******************************************************************************
  *
  *	Project Name:	osPID
- *	Designer:	Adam Johnson
- *	Language:	C++
+ *	Designer:		Adam Johnson
+ *	Language:		C++
  *	Environment:	Arduino
  *
  *	Description:	The osPID is a PID controller.  This is the main file.
@@ -15,9 +15,9 @@
 #include "AnalogButton_local.h"
 #include "EEPROMAnything.h"
 #include "InputCard.h"
-//#include "OutputCard.h"
-#include "PID_v1_local.h"
-#include "PID_AutoTune_v0_local.h"
+#include "OutputCard.h"
+#include "PID_v1.h"
+#include "PID_AutoTune_v0.h"
 
 #define PROJECT			" osPID"		// project name
 #define FVN				" alpha"		// firmware version
@@ -53,8 +53,8 @@ const byte lcdColumns = 8;				// LCD's number of characters per line
 // Objects
 LiquidCrystal lcd(pinLCDrs, pinLCDen, pinLCDd4, pinLCDd5, pinLCDd6, pinLCDd7);
 AnalogButton button(pinKeys, key0Level, key1Level, key2Level, key3Level);
-InputCard myInput(pinTherm, pinCS, pinMISO, pinCLK);
-//OutputCard myOutput(pinRelay1, pinRelay2);
+InputCard input(pinTherm, pinCS, pinMISO, pinCLK);
+OutputCard output(pinRelay1, pinRelay2);
 
 /******************************************************************************
  *
@@ -74,11 +74,19 @@ void setup(void)
 	lcd.begin(lcdColumns, lcdRows);
 
 	// Display firmware version.
-	lcd.setCursor(0,0);
+	lcd.setCursor(0, 0);
 	lcd.print(F(PROJECT));
-	lcd.setCursor(0,1);
+	lcd.setCursor(0, 1);
 	lcd.print(F(FVN));
+	
+	// Wait 1 second.
 	delay(1000);
+	
+	// Set up the display for temperature.
+	lcd.setCursor(0, 0);
+	lcd.print("temp  ");
+	lcd.setCursor(0, 1);
+	lcd.print("      C");
 	
 	// Set up PID library.
 //	myPID.SetSampleTime(1000);
@@ -101,16 +109,21 @@ void loop()
 {
 	double temperature;
 	
-	// Test the input card.
-	temperature = myInput.ReadFromCard();
+	// Read the temperature from the input card.
+	temperature = input.ReadFromCard();
 
 	// Report the temperature to the user.
 	Serial.print(temperature);
 	Serial.println(" C");
 
 	// Display the temperature.
-	lcd.setCursor(0,1);
+	lcd.setCursor(0, 1);
 	lcd.print(temperature);
+	
+	// Set output.
+//	output.SetRelayState(0, HIGH);
+//	output.SetRelayState(1, HIGH);
+	output.SetOutput(50.0);
 
 	// Wait a second.
 	delay(1000);

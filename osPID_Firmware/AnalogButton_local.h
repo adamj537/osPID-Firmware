@@ -8,8 +8,8 @@
  *					analog pin.
  *
  *****************************************************************************/
- 
- #ifndef ANALOG_BUTTON_H
+
+#ifndef ANALOG_BUTTON_H
 #define ANALOG_BUTTON_H
 
 #include <stdint.h>

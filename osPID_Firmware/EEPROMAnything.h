@@ -39,48 +39,48 @@
 // uint16_t (since uint8_t can't exceed 255).
 
 // EEPROM management variable
-const uint16_t RESET_ADDR			= 0;	// 1 byte
+#define RESET_ADDR			0	// 1 byte
 
 // Tuning parameters
-const uint16_t DIR_ADDR				= 1;	// 1 byte - char
-const uint16_t KP_ADDR				= 2;	// 4 bytes - double
-const uint16_t KI_ADDR				= 6;	// 4 bytes - double
-const uint16_t KD_ADDR				= 10;	// 4 bytes - double
+#define DIR_ADDR			1	// 1 byte - char
+#define KP_ADDR				2	// 4 bytes - double
+#define KI_ADDR				6	// 4 bytes - double
+#define KD_ADDR				10	// 4 bytes - double
 
 // Dashboard settings
-const uint16_t MODE_ADDR			= 14;	// 1 byte - char
-const uint16_t SP_ADDR				= 15;	// 4 bytes - double
-const uint16_t OUTPUT_ADDR			= 19;	// 4 bytes - double
+#define MODE_ADDR			14	// 1 byte - char
+#define SP_ADDR				15	// 4 bytes - double
+#define OUTPUT_ADDR			19	// 4 bytes - double
 
 // Tuning variables
-const uint16_t TUNE_STEP_ADDR		= 23;	// 4 bytes - double
-const uint16_t TUNE_NOISE_ADDR		= 27;	// 4 bytes - double
-const uint16_t TUNE_LOOKBACK_ADDR	= 31;	// 4 bytes - double
+#define TUNE_STEP_ADDR		23	// 4 bytes - double
+#define TUNE_NOISE_ADDR		27	// 4 bytes - double
+#define TUNE_LOOKBACK_ADDR	31	// 4 bytes - double
 
 // Profile variables (136 bytes)
-const uint16_t PROF_NAME_ADDR		= 35;	// string - 8 bytes (including NULL)
-const uint16_t PROF_TYPES_ADDR		= 43;	// 24 bytes of profile data
-const uint16_t PROF_VALS_ADDR		= 67;	// 85 bytes of profile data
-const uint16_t PROF_TIMES_ADDR		= 152;	// 20 bytes of profile data
+#define PROF_NAME_ADDR		35	// string - 8 bytes (including NULL)
+#define PROF_TYPES_ADDR		43	// 24 bytes of profile data
+#define PROF_VALS_ADDR		67	// 85 bytes of profile data
+#define PROF_TIMES_ADDR		152	// 20 bytes of profile data
 
 // Input Card variables (# bytes depends on the card)
-const uint16_t INPUT_TYPE_ADDR		= 172;	// 1 byte - char
-const uint16_t INPUT_REFRES_ADDR	= 173;	// 4 bytes - double
-const uint16_t INPUT_BETA_ADDR		= 176;	// 4 bytes - double
-const uint16_t INPUT_REFTEMP_ADDR	= 180;	// 4 bytes - double
-const uint16_t INPUT_DIV_ADDR		= 184;	// 4 bytes - double
+#define INPUT_TYPE_ADDR		172	// 1 byte - char
+#define INPUT_REFRES_ADDR	173	// 4 bytes - double
+#define INPUT_BETA_ADDR		176	// 4 bytes - double
+#define INPUT_REFTEMP_ADDR	180	// 4 bytes - double
+#define INPUT_DIV_ADDR		184	// 4 bytes - double
 
 // Output Card variables (# bytes depends on the card)
-const uint16_t OUTPUT_RELAY_ADDR	= 300;	// 1 byte - char
-const uint16_t OUTPUT_WINDOW_ADDR	= 301;	// 4 bytes - unsigned long
+#define OUTPUT_RELAY_ADDR	300	// 1 byte - char
+#define OUTPUT_WINDOW_ADDR	301	// 4 bytes - unsigned long
 
 // EEPROM address 0 holds a value used to automatically trigger an EEPROM reset
 // If this value is not equal to a certain value (defined by EEPROM_RESET
 // below), then this module will reload all variables from EEPROM.  This is
 // usually done after a firmware update or reset.  Note that values stored in
 // EEPROM are of type uint8_t.
-const uint8_t EEPROM_RESET		= 0;	// "Please reset me to default values."
-const uint8_t EEPROM_NO_RESET	= 2;	// "Don't reset me."
+#define EEPROM_RESET		0	// "Please reset me to default values."
+#define EEPROM_NO_RESET		2	// "Don't reset me."
 
 /******************************************************************************
  *

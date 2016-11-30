@@ -36,8 +36,8 @@ uint8_t thermocoupleMISO = 12;
 uint8_t thermocoupleCLK = 13;
 
 #ifdef TEMP_INPUT_V120
-#include "MAX31855_local.h"
-MAX31855 thermocouple(thermocoupleCLK, thermocoupleMISO, thermocoupleCS);
+#include "MAX31855.h"
+MAX31855 thermocouple(thermocoupleMISO, thermocoupleCS, thermocoupleCLK);
 #endif
 
 #ifdef TEMP_INPUT_V110
@@ -193,7 +193,7 @@ double InputCard::ReadFromCard()
 	if(inputType == INPUT_SENSOR_THERMOCOUPLE)
 	{
 		// Read temperature from the thermocouple chip...
-		temp = thermocouple.ReadThermocouple(CELSIUS);
+		temp = thermocouple.readThermocouple(CELSIUS);
 
 		// If there was an error...
 		if (temp == FAULT_OPEN || temp == FAULT_SHORT_GND || temp == FAULT_SHORT_VCC)

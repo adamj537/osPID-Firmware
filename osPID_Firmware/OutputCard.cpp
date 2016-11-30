@@ -23,12 +23,11 @@
 #include <stdint.h>
 #include "OutputCard.h"
 
-const uint8_t pinRelay1 = 6;				// relay on Digital Pin 6
-const uint8_t pinRelay2 = 5;				// relay on Digital Pin 5
+byte pinRelay1;				// pin attached to relay 1
+byte pinRelay2;				// pin attached to relay 2
+byte outputRelay;			// relay used for output functions
 
 const char outputVersion[5] = "OID1";
-
-byte outputRelay = 1;
 
 #if defined(DIGITAL_OUTPUT_V120) || defined(DIGITAL_OUTPUT_V150)
 
@@ -39,14 +38,16 @@ byte outputRelay = 1;
  *	Description:	Sets up the output card with default values.
  *
  *****************************************************************************/
-OutputCard::OutputCard(void)
+OutputCard::OutputCard(byte relay1Pin, byte relay2pin)
 {
-	outputRelay = 0;					// Default to use relay 1.
-	outWindowSec = 5.0;					// Set window size for 5 seconds.
-	windowSize = 5000;					// Set window size for 5 seconds.
-  
-	pinMode(relay1, OUTPUT);			// Set relay pins as outputs.
-	pinMode(relay2, OUTPUT);
+	outputRelay = 0;					// Default to use relay 2.
+	windowSize = 10000;					// Set window size for 10 seconds.
+	
+	pinRelay1 = relay1Pin;				// Remember the relay pins.
+	pinRelay2 = relay2pin;
+	
+	pinMode(pinRelay1, OUTPUT);			// Set relay pins as outputs.
+	pinMode(pinRelay2, OUTPUT);
 }
 
 /******************************************************************************
@@ -65,11 +66,11 @@ outputResult_t OutputCard::SetRelayState(bool relay, bool state)
 	
 	if (relay == 0)
 	{
-		digitalWrite(relay1, state);
+		digitalWrite(pinRelay1, state);
 	}
-	else if(relay == 1)
+	else if (relay == 1)
 	{
-		digitalWrite(relay2, state);
+		digitalWrite(pinRelay2, state);
 	}
 	else
 	{
@@ -95,11 +96,11 @@ outputResult_t  GetRelayState(bool relay, bool *state)
 	
 	if (relay == 0)
 	{
-		*state = digitalRead(relay1, state);
+		*state = digitalRead(pinRelay1);
 	}
 	else if (relay == 1)
 	{
-		*state = digitalRead(relay2, state);
+		*state = digitalRead(pinRelay2);
 	}
 	else
 	{
@@ -109,20 +110,27 @@ outputResult_t  GetRelayState(bool relay, bool *state)
 	return result;
 }
 
-void OutputCard::SetOutputWindow(double val)
+/******************************************************************************
+ *
+ *	Function:		SetOutputWindow
+ *
+ *	Description:	Sets the output period time.
+ *
+ *	Parameters:		seconds - time of a single output period [seconds]
+ *
+ *****************************************************************************/
+void OutputCard::SetOutputWindow(double seconds)
 {
 	uint32_t mSec;						// holds val in milliseconds
   
-	mSec = (uint32_t)(val * 1000);		// Convert from sec to milliseconds.
+	mSec = (uint32_t)(seconds * 1000);	// Convert from sec to milliseconds.
   
 	if (mSec < 500)
 	{
 		mSec = 500;						// Minimum size is 500 milliseconds.
 	}
-  
-	outWindowSec = (double)mSec / 1000;	// Convert to seconds.
 	
-	if(mSec != windowSize)				// Store the new value (if necessary).
+	if (mSec != windowSize)				// Store the new value (if necessary).
 	{
 		windowSize = mSec;
 	}
@@ -133,30 +141,43 @@ unsigned long OutputCard::GetOutputWindow()
 	return windowSize;
 }
 
+/******************************************************************************
+ *
+ *	Function:		SetOutputRelay
+ *
+ *	Description:	Set which relay is used by the output functions.
+ *
+ *	Parameters:		relay - which relay is used
+ *
+ *****************************************************************************/
+void SetOutputRelay(bool relay)
+{
+	outputRelay = relay;
+}
+
 void OutputCard::SetOutput(double value)
 {
-	unsigned long wind;	// window of time
-	unsigned long oVal;	// output value (0 - 100%)
+	unsigned long wind;	// time relay is on + time relay is off [milliseconds]
+	unsigned long oVal;	// time relay is on [milliseconds]
 
 	wind  = millis() % windowSize;
-	/*
+/*
 	wind = (millis() - windowStartTime);
-	if(wind > windowSize)
+	if (wind > windowSize)
 	{ 
 		wind -= windowSize;
 		windowStartTime += windowSize;
 	}
-	*/
-
-	oVal = (unsigned long)(value*(double)windowSize / 100.0);
+*/
+	oVal = (unsigned long)(value * (double)windowSize / 100.0);
 
 	if (outputRelay == 0)		//activate selected relay
 	{
-		digitalWrite(relay1 ,(oVal > wind) ? HIGH : LOW);
+		digitalWrite(pinRelay1 ,(oVal > wind) ? HIGH : LOW);
 	}
 	else if (outputRelay == 1)
 	{
-		digitalWrite(relay2 ,(oVal > wind) ? HIGH : LOW);
+		digitalWrite(pinRelay2 ,(oVal > wind) ? HIGH : LOW);
 	}
 }
 
