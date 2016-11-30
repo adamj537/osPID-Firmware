@@ -3,7 +3,7 @@
 
 /* Code for state transitions.  Defines the paths between all the states, and
  * which inputs trigger movement between states.	*/
-const MENU_NEXTSTATE menu_nextstate [] =
+const menuNextState_t nextState [] =
 {
 //	State			Input			Next State
 	{ST_DASHBRD,	BUTTON_BACK,	ST_DASHBRD},
@@ -23,21 +23,21 @@ const MENU_NEXTSTATE menu_nextstate [] =
 
 /* Code for state functions.  Defines the function performed in each state
  * as well as a text description displayed to the user at each state. */
-const MENU_STATE menu_state [] =
+const menuState_t menu_state [] =
 {
-//State		//Text		//Function
+//State			//Text		//Function
   {ST_DASHBRD,	"DashBrd",	MenuDashBoard},
   {ST_CONFIG,	"Config",	MenuConfig},
-  {ST_ATUNE,	"",		MenuATune},
+  {ST_ATUNE,	"",			MenuATune},
   {ST_PROFILE,	"Profiles",	MenuProfile},
-  {ST_SP,	"S",		MenuSetpoint},
-  {ST_IN,	"I",		MenuInput},
-  {ST_OUT,	"O",		MenuOutput},
-  {ST_MAN,	"M",		MenuManual},
-  {ST_P,	"P",		MenuPTerm},
-  {ST_I,	"I",		MenuITerm},
-  {ST_D,	"D",		MenuDTerm},
-  {ST_PV,	"",		MenuPV},
+  {ST_SP,		"S",		MenuSetpoint},
+  {ST_IN,		"I",		MenuInput},
+  {ST_OUT,		"O",		MenuOutput},
+  {ST_MAN,		"M",		MenuManual},
+  {ST_P,		"P",		MenuPTerm},
+  {ST_I,		"I",		MenuITerm},
+  {ST_D,		"D",		MenuDTerm},
+  {ST_PV,		"",		MenuPV},
 
   //This tells the main loop to stop.
   //If it is removed, the program will crash!
@@ -46,10 +46,10 @@ const MENU_STATE menu_state [] =
 
 bool editing = false;
 bool tuning = false;
-byte curMenu=0;
-byte mIndex=0;
-byte mDrawIndex=0;
-byte editDepth=0;
+byte curMenu = 0;
+byte mIndex = 0;
+byte mDrawIndex = 0;
+byte editDepth = 0;
 
 byte mMain[] = {0,1,2,3};
 byte mDash[] = {4,5,6,7};

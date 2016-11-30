@@ -38,24 +38,24 @@ enum {
 
 typedef struct
 {
-  uint8 state;
-  uint8 input;
-  uint8 nextState;
-} MENU_NEXTSTATE;
+  uint8_t state;
+  uint8_t input;
+  uint8_t nextState;
+} menuNextState_t;
 
-extern const rom MENU_NEXTSTATE menu_nextstate[];
+extern const rom menuNextState_t nextState[];
 
 /* Code for state functions.  Defines the function performed in each state
  * as well as a text description displayed to the user at each state. */
 
 typedef struct
 {
-  uint8 state;
+  uint8_t state;
   const rom char *text;
-  uint8 (* StateFunction) (uint8 input);
-} MENU_STATE;
+  uint8_t (* StateFunction) (uint8 input);
+} menuState_t;
 
-extern const rom MENU_STATE menu_state[];
+extern const rom menuState_t state[];
 
 //State function initializations
 uint8 MenuPV(uint8 input);
